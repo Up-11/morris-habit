@@ -46,7 +46,7 @@ const btnText = computed(() =>
 					<UpdateHabitModal :habit="habit">
 						<UButton variant="ghost" icon="lucide:pen" />
 					</UpdateHabitModal>
-					<EditCalendarDrawer>
+					<EditCalendarDrawer :habit="habit">
 						<UButton variant="ghost" icon="lucide:calendar" />
 					</EditCalendarDrawer>
 				</div>

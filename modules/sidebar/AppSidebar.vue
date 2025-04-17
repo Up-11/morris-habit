@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import ArchiveModal from '../common/ArchiveModal.vue'
 import SettingsModal from '../common/SettingsModal.vue'
 import CreatePageModal from './CreatePageModal.vue'
 import ProfileMenu from './ProfileMenu.vue'
@@ -33,6 +34,9 @@ import SidebarItem from './SidebarItem.vue'
 				>Настройки</UButton
 			>
 		</SettingsModal>
+		<ArchiveModal>
+			<UButton variant="ghost" icon="lucide:archive" class="">Архив</UButton>
+		</ArchiveModal>
 	</div>
 </template>
 

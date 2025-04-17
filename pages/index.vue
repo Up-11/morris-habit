@@ -2,10 +2,8 @@
 import type { TabsItem } from '@nuxt/ui'
 import { habits } from '~/lib/data'
 import CreateHabitModal from '~/modules/habit/CreateHabitModal.vue'
-import DefaultHabit from '~/modules/habit/DefaultHabit.vue'
-import WeekHabit from '~/modules/habit/WeekHabit.vue'
-
-type View = 'week' | 'common'
+import HabitItem from '~/modules/habit/HabitItem.vue'
+import type { View } from '~/types'
 
 const items = ref<TabsItem[]>([
 	{
@@ -28,6 +26,10 @@ onMounted(() => {
 watch(currValue, () => {
 	router.push({ query: { view: currValue.value } })
 })
+
+const notArchivedHabits = computed(() =>
+	habits.filter(habit => habit.isArchived === false)
+)
 </script>
 
 <template>
@@ -47,11 +49,13 @@ watch(currValue, () => {
 				class="max-w-40 w-full"
 			/>
 		</div>
-		<div v-if="currValue === 'common'" class="grid grid-cols-3 gap-4">
-			<DefaultHabit v-for="habit in habits" :key="habit.id" :habit="habit" />
-		</div>
-		<div v-if="currValue === 'week'" class="grid grid-cols-3 gap-4">
-			<WeekHabit />
+		<div class="grid grid-cols-3 gap-4">
+			<HabitItem
+				v-for="habit in notArchivedHabits"
+				:key="habit.id"
+				:view="currValue"
+				:habit="habit"
+			/>
 		</div>
 	</section>
 </template>

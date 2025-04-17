@@ -4,6 +4,9 @@ export type User = {
 	displayName: string
 }
 
+export type View = 'week' | 'common'
+
+
 export type Habit = {
 	id: string
 	title: string
@@ -19,4 +22,11 @@ export type HabitDay = {
 	habitId: string
 	date: string
 	completed: boolean
+}
+
+export type HabitDot = {
+	date: string
+	inRange: boolean
+	isCompleted: boolean
+	isCurrentDay: boolean
 }

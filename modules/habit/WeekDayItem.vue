@@ -1,14 +1,18 @@
 <script setup lang="ts">
 const {
 	color = '#FF9899',
-	title = 'Пн',
 	isCompleted,
+	date,
 } = defineProps<{
-	title?: string
 	isCurrentDay?: boolean
 	isCompleted?: boolean
 	color?: string
+	date: string
 }>()
+
+const title = computed(() => {
+	return new Date(date).toLocaleDateString('ru-RU', { weekday: 'short' })
+})
 </script>
 
 <template>

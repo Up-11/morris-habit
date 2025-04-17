@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { VNodeRef } from 'vue'
 import DotItem from './DotItem.vue'
+import { habitDaysKey } from '~/lib/keys'
 
 defineProps<{ color: string }>()
 
@@ -14,23 +15,27 @@ const scrollToEnd = () => {
 onMounted(() => {
 	nextTick(scrollToEnd)
 })
+
+const injected = inject(habitDaysKey)
 </script>
 
 <template>
 	<div
 		ref="container"
-		class="h-full grid grid-rows-7 gap-1 grid-cols-auto overflow-x-auto"
+		class="h-full grid grid-rows-7 gap-1 grid-cols-auto overflow-x-auto max-w-fit"
 	>
-		<template v-for="col in 50" :key="col">
+		<template v-for="(week, i) in injected!.weeks.value" :key="week">
 			<DotItem
-				v-for="row in 7"
-				:key="row"
-				in-range
-				is-completed
+				v-for="(day, index) in week"
+				:key="day.date"
+				:in-range="day.inRange"
+				:is-current-day="day.isCurrentDay"
+				:is-completed="day.isCompleted"
 				:color="color"
+				:date="day.date"
 				:style="{
-					'grid-column': col,
-					'grid-row': row,
+					'grid-column': i + 1,
+					'grid-row': index + 1,
 				}"
 			/>
 		</template>

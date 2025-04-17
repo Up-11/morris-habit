@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import type { Habit } from '~/types'
 import WeekDayItem from './WeekDayItem.vue'
+import { habitDaysKey } from '~/lib/keys'
 
-// defineProps<{ icon: string; title: string; timing: string }>()
+defineProps<{ habit: Habit }>()
+
+const injected = inject(habitDaysKey)
+
+const lastWeek = injected?.weeks.value.at(-1)
 </script>
 
 <template>
@@ -10,20 +16,27 @@ import WeekDayItem from './WeekDayItem.vue'
 			class="flex-1 border-b border-b-neutral-700 pb-2 flex justify-between items-center"
 		>
 			<div class="flex items-center gap-2">
-				<UIcon name="lucide:star" size="20" />
-				<p>Set Small Goals</p>
+				<UIcon :name="habit.icon" size="20" />
+				<p>{{ habit.title }}</p>
 			</div>
 
 			<UButton icon="lucide:check" variant="soft" size="xl" />
 		</div>
 		<div class="flex-1 pt-2 flex justify-between gap-1">
-			<WeekDayItem s-active />
-			<WeekDayItem s-active title="Вт" is-current-day />
+			<WeekDayItem
+				v-for="day in lastWeek"
+				:key="day.date"
+				:is-completed="day.isCompleted"
+				:is-current-day="day.isCurrentDay"
+				:date="day.date"
+				:color="habit.color"
+			/>
+			<!-- <WeekDayItem s-active title="Вт" is-current-day />
 			<WeekDayItem s-active title="Ср" />
 			<WeekDayItem is-active title="Чт" />
 			<WeekDayItem is-active title="Пт" />
 			<WeekDayItem is-active title="Сб" />
-			<WeekDayItem s-active title="Вс" />
+			<WeekDayItem s-active title="Вс" /> -->
 		</div>
 	</div>
 </template>
