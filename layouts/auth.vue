@@ -8,20 +8,20 @@
 			<div class="bg-black/80 -z-10 fixed backdrop-blur-md inset-0" />
 		</div>
 
-		<div
-			class="grid grid-cols-1 sm:grid-cols-[450px_1fr] min-h-[calc(100dvh)] p-10 overflow-hidden"
-		>
+		<div class="grid grid-cols-1 sm:grid-cols-[450px_1fr] h-screen p-10">
 			<div
-				class="flex flex-col h-full bg-neutral-900 max-sm:rounded-xl sm:rounded-l-xl text-nowrap w-full px-20 relative overflow-y-auto"
+				class="flex flex-col h-full bg-neutral-900 max-sm:rounded-xl sm:rounded-l-xl text-nowrap w-full relative overflow-auto"
 			>
-				<div class="h-full my-auto">
+				<div class="my-auto flex flex-col gap-4 justify-center items-center">
+					<AppLogo />
 					<slot />
 				</div>
 			</div>
-			<div class="rounded-r-xl h-full z-10 overflow-hidden">
+
+			<div class="rounded-r-xl max-sm:hidden z-10 h-full overflow-hidden">
 				<NuxtImg
 					src="/image.jpg"
-					class="h-full rounded-r-xl object-cover"
+					class="rounded-r-xl object-cover w-full h-full"
 					alt="auth-background"
 				/>
 			</div>

@@ -13,5 +13,10 @@ export default defineNuxtConfig({
 		'@nuxt/icon',
 		'@nuxt/image',
 		'@nuxt/ui',
+		'@pinia/nuxt',
 	],
+	fonts: {
+		families: [{ name: 'Rubik', provider: 'google' }],
+	},
+	ssr: false,
 })

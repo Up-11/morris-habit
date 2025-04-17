@@ -5,7 +5,7 @@ import AppSidebar from '~/modules/sidebar/AppSidebar.vue'
 <template>
 	<div class="">
 		<AppSidebar />
-		<div class="ml-[300px]">
+		<div class="ml-[300px] p-5">
 			<slot />
 		</div>
 	</div>

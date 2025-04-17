@@ -1,11 +1,15 @@
 <script lang="ts" setup>
+import LoginForm from '~/modules/auth/LoginForm.vue'
+
 definePageMeta({
 	layout: 'auth',
 })
 </script>
 
 <template>
-	<div>login</div>
+	<div>
+		<LoginForm />
+	</div>
 </template>
 
 <style scoped></style>
