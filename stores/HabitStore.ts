@@ -19,6 +19,7 @@ export const useHabitStore = defineStore('HabitStore', () => {
 	const user = getAuth().currentUser
 	const db = getFirestore()
 	const toast = useToast()
+	const auth = useAuthStore()
 
 	const notArchivedHabits = computed(() =>
 		habits.value.filter(habit => habit.isArchived === false)
@@ -44,6 +45,7 @@ export const useHabitStore = defineStore('HabitStore', () => {
 	}
 
 	async function getHabits() {
+		if (auth.user.id === null) return
 		try {
 			const getData = query(
 				collection(db, `users/${user!.uid}/habits`),

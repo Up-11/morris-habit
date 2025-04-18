@@ -69,6 +69,11 @@ watch(
 				:habit="habit"
 			/>
 		</div>
+		<div v-if="habitStore.notArchivedHabits.length === 0">
+			<h1 class="text-2xl text-center font-bold">
+				Тут пока ничего нет, добавьте свою привычку на экран
+			</h1>
+		</div>
 	</section>
 </template>
 

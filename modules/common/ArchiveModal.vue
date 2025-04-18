@@ -28,6 +28,11 @@ const closeModal = () => {
 					@close-modal="closeModal"
 				/>
 			</div>
+			<div v-if="store.archivedHabits.length === 0">
+				<h1 class="text-xl text-center font-bold">
+					У вас в архиве пустовато...
+				</h1>
+			</div>
 		</template>
 	</UModal>
 </template>
