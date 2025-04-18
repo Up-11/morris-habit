@@ -21,20 +21,44 @@ const state = reactive<Partial<Schema>>({
 	icon: props.habit.icon,
 	color: props.habit.color,
 })
+const isLoading = ref<boolean>(false)
+
+const isOpen = ref<boolean>(false)
+const store = useHabitStore()
 
 const toast = useToast()
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-	toast.add({
-		title: 'Success',
-		description: 'The form has been submitted.',
-		color: 'success',
-	})
-	console.log(event.data)
+	try {
+		isLoading.value = true
+		await store.updateHabit({
+			id: props.habit.id,
+			title: event.data.title,
+			icon: event.data.icon,
+			color: event.data.color,
+		})
+		toast.add({
+			title: 'Привычка обновлена',
+			color: 'success',
+		})
+		isOpen.value = false
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		toast.add({
+			title: 'Ошибка при обновлении привычки',
+			description: error.message,
+			color: 'error',
+		})
+	} finally {
+		isLoading.value = false
+		store.getHabits()
+	}
 }
 </script>
 
 <template>
 	<UModal
+		v-model:open="isOpen"
 		title="Новая привычка"
 		:ui="{
 			overlay: 'backdrop-blur-sm',
@@ -77,7 +101,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 					</div>
 				</UFormField>
 
-				<UButton type="submit" size="xl"> Создать </UButton>
+				<UButton :loading="isLoading" type="submit" size="xl">
+					Обновить
+				</UButton>
 			</UForm>
 		</template>
 	</UModal>

@@ -4,6 +4,9 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { appColors, appIcons } from '~/lib/data'
 import IconItem from '../common/IconItem.vue'
 import ColorItem from '../common/ColorItem.vue'
+import type { Habit } from '~/types'
+import { v4 as uuidv4 } from 'uuid'
+import { doc, getFirestore, setDoc } from 'firebase/firestore'
 
 const schema = z.object({
 	title: z.string(),
@@ -18,20 +21,38 @@ const state = reactive<Partial<Schema>>({
 	icon: appIcons[0],
 	color: appColors[0],
 })
+const db = getFirestore()
+const { user } = useAuthStore()
+const isLoading = ref<boolean>(false)
+const isOpen = ref<boolean>(false)
+const store = useHabitStore()
 
 const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+	isLoading.value = true
+	const payload: Habit = {
+		id: uuidv4(),
+		title: event.data.title,
+		icon: event.data.icon,
+		color: event.data.color,
+		isArchived: false,
+		createdAt: new Date().toDateString(),
+		days: [],
+	}
+	await setDoc(doc(db, `users/${user.id}/habits/${payload.id}`), payload)
+	store.getHabits()
 	toast.add({
-		title: 'Success',
-		description: 'The form has been submitted.',
+		title: 'Привычка создана',
 		color: 'success',
 	})
-	console.log(event.data)
+	isLoading.value = false
+	isOpen.value = false
 }
 </script>
 
 <template>
 	<UModal
+		v-model:open="isOpen"
 		title="Новая привычка"
 		:ui="{
 			overlay: 'backdrop-blur-sm',
@@ -74,7 +95,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 					</div>
 				</UFormField>
 
-				<UButton type="submit" size="xl"> Создать </UButton>
+				<UButton :loading="isLoading" type="submit" size="xl">
+					Создать
+				</UButton>
 			</UForm>
 		</template>
 	</UModal>

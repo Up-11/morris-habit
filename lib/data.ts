@@ -1,4 +1,4 @@
-import type { Habit } from '~/types'
+import type { User } from '~/types'
 
 export const appIcons = [
 	'lucide:activity',
@@ -46,102 +46,8 @@ export const appColors = [
 	'#99C5C4',
 	'#CCFFFF',
 ]
-
-export const habits: Habit[] = [
-	{
-		id: 'habit-1',
-		title: 'Reading',
-		createdAt: '2025-03-10T09:00:00Z',
-		icon: appIcons[0],
-		color: appColors[5],
-		days: [
-			{
-				id: 'day-1-1',
-				habitId: 'habit-1',
-				date: '2025-03-11',
-				completed: true,
-			},
-			{
-				id: 'day-1-2',
-				habitId: 'habit-1',
-				date: '2025-03-12',
-				completed: true,
-			},
-			{
-				id: 'day-1-3',
-				habitId: 'habit-1',
-				date: '2025-03-13',
-				completed: false,
-			},
-		],
-		isArchived: false,
-	},
-	{
-		id: 'habit-2',
-		title: 'Exercise',
-		createdAt: '2025-03-10T09:00:00Z',
-		icon: appIcons[4],
-		color: appColors[7],
-		days: [
-			{
-				id: 'day-2-1',
-				habitId: 'habit-2',
-				date: '2025-04-11',
-				completed: true,
-			},
-			{
-				id: 'day-2-2',
-				habitId: 'habit-2',
-				date: '2025-04-15',
-				completed: false,
-			},
-			{
-				id: 'day-2-3',
-				habitId: 'habit-2',
-				date: '2025-04-16',
-				completed: false,
-			},
-			{
-				id: 'day-2-3',
-				habitId: 'habit-2',
-				date: '2025-04-17',
-				completed: false,
-			},
-		],
-		isArchived: false,
-	},
-	{
-		id: 'habit-3',
-		title: 'chicha',
-		createdAt: '2025-03-10T09:00:00Z',
-		icon: appIcons[8],
-		color: appColors[1],
-		days: [
-			{
-				id: 'day-2-1',
-				habitId: 'habit-2',
-				date: '2025-04-11',
-				completed: true,
-			},
-			{
-				id: 'day-2-2',
-				habitId: 'habit-2',
-				date: '2025-04-15',
-				completed: false,
-			},
-			{
-				id: 'day-2-3',
-				habitId: 'habit-2',
-				date: '2025-04-16',
-				completed: false,
-			},
-			{
-				id: 'day-2-3',
-				habitId: 'habit-2',
-				date: '2025-04-17',
-				completed: false,
-			},
-		],
-		isArchived: true,
-	},
-]
+export const initialUser: User = {
+	id: null,
+	email: null,
+	displayName: null,
+}

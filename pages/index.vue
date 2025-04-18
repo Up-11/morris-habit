@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TabsItem } from '@nuxt/ui'
-import { habits } from '~/lib/data'
+
 import CreateHabitModal from '~/modules/habit/CreateHabitModal.vue'
 import HabitItem from '~/modules/habit/HabitItem.vue'
 import type { View } from '~/types'
@@ -17,18 +17,22 @@ const items = ref<TabsItem[]>([
 ])
 
 const currValue = ref<View>('common')
-const router = useRouter()
-
+const habitStore = useHabitStore()
 onMounted(() => {
-	currValue.value = router.currentRoute.value.query.view as View
+	const savedView = localStorage.getItem('currentView') as View
+	if (savedView) {
+		currValue.value = savedView
+	} else {
+		currValue.value = 'common'
+	}
 })
 
-watch(currValue, () => {
-	router.push({ query: { view: currValue.value } })
-})
-
-const notArchivedHabits = computed(() =>
-	habits.filter(habit => habit.isArchived === false)
+watch(
+	currValue,
+	newView => {
+		localStorage.setItem('currentView', newView)
+	},
+	{ deep: true }
 )
 </script>
 
@@ -44,14 +48,22 @@ const notArchivedHabits = computed(() =>
 			<h2 class="font-semibold text-xl">Отображение</h2>
 			<UTabs
 				v-model="currValue"
+				:unmount-on-hide="false"
 				:content="false"
 				:items="items"
 				class="max-w-40 w-full"
 			/>
 		</div>
-		<div class="grid grid-cols-3 gap-4">
+		<div v-if="habitStore.isLoading" class="grid grid-cols-4 gap-4">
+			<USkeleton v-for="i in 12" :key="i" class="h-40" />
+		</div>
+
+		<div
+			v-else
+			class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+		>
 			<HabitItem
-				v-for="habit in notArchivedHabits"
+				v-for="habit in habitStore.notArchivedHabits"
 				:key="habit.id"
 				:view="currValue"
 				:habit="habit"

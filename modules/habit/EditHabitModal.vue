@@ -4,17 +4,40 @@ import ApproveModal from '../common/ApproveModal.vue'
 import DotList from './dot/DotList.vue'
 import EditCalendarDrawer from './EditCalendarDrawer.vue'
 import UpdateHabitModal from './UpdateHabitModal.vue'
+import { habitDaysKey } from '~/lib/keys'
 
-defineProps<{ habit: Habit }>()
+const props = defineProps<{ habit: Habit }>()
 
-const isCompleted = ref<boolean>(false)
 const btnText = computed(() =>
-	isCompleted.value ? 'Выполнено' : 'Не выполнено'
+	injected?.todayDot.value?.isCompleted ? 'Выполнено' : 'Не выполнено'
 )
+
+const store = useHabitStore()
+
+const isOpen = ref<boolean>(false)
+const isLoading = ref<boolean>(false)
+
+const closeModal = () => {
+	isOpen.value = false
+}
+
+const onClickApprove = async () => {
+	await store.archiveHabit(props.habit.id)
+	closeModal()
+}
+
+const injected = inject(habitDaysKey)
+
+const onChangeCompleted = async () => {
+	isLoading.value = true
+	await store.toggleCompleted(props.habit.id)
+	isLoading.value = false
+}
 </script>
 
 <template>
 	<UModal
+		v-model:open="isOpen"
 		:ui="{
 			overlay: 'backdrop-blur-sm',
 		}"
@@ -32,14 +55,21 @@ const btnText = computed(() =>
 				<DotList :color="habit.color" />
 				<div class="flex justify-start gap-5">
 					<UButton
-						variant="ghost"
-						:icon="isCompleted ? 'lucide:circle-check' : 'lucide:circle'"
+						:loading="isLoading"
+						:variant="injected?.todayDot.value?.isCompleted ? 'solid' : 'soft'"
+						:icon="
+							injected?.todayDot.value?.isCompleted
+								? 'lucide:circle-check'
+								: 'lucide:circle'
+						"
+						@click="onChangeCompleted"
 						>{{ btnText }}</UButton
 					>
 					<ApproveModal
 						title="Внимание!"
 						description="Вы точно хотите отправить привычку в архив?"
 						:buttons-text="['Отменить', 'Отправить']"
+						@approve="onClickApprove"
 					>
 						<UButton variant="ghost" icon="lucide:archive" />
 					</ApproveModal>

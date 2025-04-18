@@ -2,6 +2,7 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { ROUTES } from '~/config/routes'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 
 const schema = z.object({
 	email: z.string().email('Неверный формат email'),
@@ -10,19 +11,42 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-const state = reactive<Partial<Schema>>({
+const state = reactive<Schema>({
 	email: '',
 	password: '',
 })
 
+const auth = getAuth()
+
+const isLoading = ref<boolean>(false)
+const authStore = useAuthStore()
+const router = useRouter()
+
 const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-	toast.add({
-		title: 'Success',
-		description: 'The form has been submitted.',
-		color: 'success',
-	})
-	console.log(event.data)
+	isLoading.value = true
+	signInWithEmailAndPassword(auth, event.data.email, event.data.password)
+		.then(userCredential => {
+			authStore.setUser({
+				id: userCredential.user.uid,
+				email: userCredential.user.email,
+				displayName: userCredential.user.displayName,
+			})
+			toast.add({
+				title: 'Вы авторизованы',
+				color: 'success',
+			})
+			router.replace(ROUTES.INDEX)
+			console.log(userCredential)
+		})
+		.catch(error => {
+			const errorMessage = error.message
+			toast.add({
+				title: errorMessage,
+				color: 'error',
+			})
+		})
+		.finally(() => (isLoading.value = false))
 }
 </script>
 
@@ -33,7 +57,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 		class="space-y-4 flex flex-col max-w-70 justify-center items-center"
 		@submit="onSubmit"
 	>
-		<p class="text-center text-lg">Регистрация</p>
+		<p class="text-center text-lg">Логин</p>
 
 		<UFormField label="Email" class="text-wrap" name="email">
 			<UInput
@@ -42,6 +66,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 				size="lg"
 				placeholder="john@lennon.com"
 				class="w-70"
+				:loading="isLoading"
 			/>
 		</UFormField>
 
@@ -53,17 +78,20 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 				size="lg"
 				type="password"
 				placeholder="**********"
+				:loading="isLoading"
 			/>
 		</UFormField>
 
 		<UButton
 			type="submit"
 			class="text-center w-full justify-center items-center"
+			:loading="isLoading"
 		>
 			Войти
 		</UButton>
 
 		<UButton
+			:loading="isLoading"
 			:to="ROUTES.AUTH.REGISTER"
 			variant="link"
 			class="text-center justify-center items-center"

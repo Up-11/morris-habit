@@ -17,9 +17,11 @@ useHead({
 			position: 'top-center',
 		}"
 	>
-		<NuxtLayout>
-			<NuxtPage />
-		</NuxtLayout>
+		<AuthProvider>
+			<NuxtLayout>
+				<NuxtPage />
+			</NuxtLayout>
+		</AuthProvider>
 		<AppRouterTestVue />
 	</UApp>
 </template>

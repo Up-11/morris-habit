@@ -1,43 +1,44 @@
 <script lang="ts" setup>
 import ArchiveModal from '../common/ArchiveModal.vue'
 import SettingsModal from '../common/SettingsModal.vue'
-import CreatePageModal from './CreatePageModal.vue'
 import ProfileMenu from './ProfileMenu.vue'
-import SidebarItem from './SidebarItem.vue'
+
+const authStore = useAuthStore()
 </script>
 
 <template>
 	<div
-		class="fixed flex flex-col bg-neutral-900 inset-y-0 border-r-white gap-5 w-[300px] border-r p-4"
+		class="flex w-fit justify-start bg-neutral-800 m-4 rounded-lg gap-5 p-4 items-center"
 	>
 		<ProfileMenu />
-		<div class="flex flex-col justify-center items-center">
-			<UInput
-				icon="i-lucide-search"
-				size="xl"
-				variant="soft"
-				placeholder="Поиск по страницам..."
-			/>
-		</div>
-		<SidebarItem :is-active="false" title="123" href="123" />
-		<CreatePageModal>
-			<div
-				class="w-full pl-2 flex justify-between cursor-pointer items-center hover:text-primary-400 transition-colors"
-			>
-				<p class="text-md">Добавить страницу</p>
-				<UIcon name="lucide:diamond-plus" size="20" />
-			</div>
-		</CreatePageModal>
 
 		<SettingsModal>
-			<UButton variant="ghost" icon="lucide:settings" class="mt-auto"
-				>Настройки</UButton
-			>
+			<UButton
+				variant="ghost"
+				:ui="{
+					leadingIcon: '!size-5',
+				}"
+				icon="lucide:settings"
+			/>
 		</SettingsModal>
 		<ArchiveModal>
-			<UButton variant="ghost" icon="lucide:archive" class="">Архив</UButton>
+			<UButton
+				variant="ghost"
+				icon="lucide:archive"
+				class=""
+				:ui="{
+					leadingIcon: '!size-5',
+				}"
+			/>
 		</ArchiveModal>
+		<UButton
+			variant="ghost"
+			icon="lucide:door-open"
+			class=""
+			:ui="{
+				leadingIcon: '!size-5',
+			}"
+			@click="authStore.logout"
+		/>
 	</div>
 </template>
-
-<style scoped></style>

@@ -2,6 +2,11 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { ROUTES } from '~/config/routes'
 import { registerSchema, type RegisterSchema } from './schemas/register.schema'
+import {
+	createUserWithEmailAndPassword,
+	getAuth,
+	updateProfile,
+} from 'firebase/auth'
 
 const state = reactive<Partial<RegisterSchema>>({
 	email: '',
@@ -9,15 +14,44 @@ const state = reactive<Partial<RegisterSchema>>({
 	passwordRepeat: '',
 	name: '',
 })
+const auth = getAuth()
+
+const isLoading = ref<boolean>(false)
+const authStore = useAuthStore()
+const router = useRouter()
 
 const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
-	toast.add({
-		title: 'Success',
-		description: 'The form has been submitted.',
-		color: 'success',
-	})
-	console.log(event.data)
+	isLoading.value = true
+	createUserWithEmailAndPassword(auth, event.data.email, event.data.password)
+		.then(userCredential => {
+			authStore.setUser({
+				id: userCredential.user.uid,
+				email: userCredential.user.email,
+				displayName: userCredential.user.displayName,
+			})
+			toast.add({
+				title: 'Аккаунт успешно создан',
+				color: 'success',
+			})
+			router.replace(ROUTES.INDEX)
+			console.log(userCredential)
+			return userCredential
+		})
+		.then(userCredential => {
+			updateProfile(userCredential.user, {
+				displayName: event.data.name,
+			})
+			authStore.setDisplayName(event.data.name)
+		})
+		.catch(error => {
+			const errorMessage = error.message
+			toast.add({
+				title: errorMessage,
+				color: 'error',
+			})
+		})
+		.finally(() => (isLoading.value = false))
 }
 </script>
 <template>
@@ -33,6 +67,7 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
 			<UInput
 				v-model="state.name"
 				variant="soft"
+				:loading="isLoading"
 				size="lg"
 				placeholder="John Sina"
 				class="w-70"
@@ -43,6 +78,7 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
 			<UInput
 				v-model="state.email"
 				variant="soft"
+				:loading="isLoading"
 				size="lg"
 				placeholder="john@lennon.com"
 				class="w-70"
@@ -54,6 +90,7 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
 				v-model="state.password"
 				variant="soft"
 				class="w-70"
+				:loading="isLoading"
 				size="lg"
 				type="password"
 				placeholder="**********"
@@ -67,11 +104,13 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
 				variant="soft"
 				size="lg"
 				type="password"
+				:loading="isLoading"
 				placeholder="**********"
 			/>
 		</UFormField>
 
 		<UButton
+			:loading="isLoading"
 			type="submit"
 			class="w-full text-center justify-center items-center"
 		>
@@ -79,6 +118,7 @@ async function onSubmit(event: FormSubmitEvent<RegisterSchema>) {
 		</UButton>
 
 		<UButton
+			:loading="isLoading"
 			:to="ROUTES.AUTH.LOGIN"
 			variant="link"
 			class="w-full text-center justify-center items-center"

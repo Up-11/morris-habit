@@ -1,11 +1,10 @@
 export type User = {
-	id: string
-	email: string
-	displayName: string
+	id: string | null
+	email: string | null
+	displayName: string | null
 }
 
 export type View = 'week' | 'common'
-
 
 export type Habit = {
 	id: string

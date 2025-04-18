@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { habits } from '~/lib/data'
 import ArchivedHabit from '../habit/ArchivedHabit.vue'
 
-const archivedHabits = computed(() => habits.filter(habit => habit.isArchived))
+const store = useHabitStore()
+
+const isOpen = ref<boolean>(false)
+const closeModal = () => {
+	isOpen.value = false
+}
 </script>
 
 <template>
 	<UModal
+		v-model:open="isOpen"
 		title="Архив"
 		:ui="{
 			overlay: 'backdrop-blur-sm',
@@ -17,9 +22,10 @@ const archivedHabits = computed(() => habits.filter(habit => habit.isArchived))
 		<template #body>
 			<div class="flex flex-col gap-4">
 				<ArchivedHabit
-					v-for="habit in archivedHabits"
+					v-for="habit in store.archivedHabits"
 					:key="habit.id"
 					:habit="habit"
+					@close-modal="closeModal"
 				/>
 			</div>
 		</template>

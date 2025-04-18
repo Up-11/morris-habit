@@ -6,9 +6,18 @@ import { habitDaysKey } from '~/lib/keys'
 
 const props = defineProps<{ view: View; habit: Habit }>()
 
-const { weeks, days } = useHabitDays(props.habit)
+const { weeks, days, todayDot } = useHabitDays(props.habit)
 
-provide(habitDaysKey, { weeks, days })
+watch(
+	() => props.habit,
+	newHabit => {
+		const result = useHabitDays(newHabit)
+		days.value = result.days.value
+	},
+	{ deep: true, immediate: true }
+)
+
+provide(habitDaysKey, { weeks, days, todayDot })
 </script>
 
 <template>

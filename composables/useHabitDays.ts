@@ -1,65 +1,69 @@
 import type { Habit, HabitDot } from '~/types'
 
 export const useHabitDays = (habit: Habit) => {
-	const startDate = new Date('2024-12-31')
+	const startDate = new Date('2025-01-01')
 	const today = new Date()
-
-	startDate.setHours(0, 0, 0, 0)
 	today.setHours(0, 0, 0, 0)
+	console.log(new Date(habit.createdAt))
 
 	const allDays: HabitDot[] = []
-	const currentDate = new Date(startDate)
 
 	const firstMonday = new Date(startDate)
 	while (firstMonday.getDay() !== 1) {
 		firstMonday.setDate(firstMonday.getDate() + 1)
 	}
+	const currentDate = new Date(firstMonday)
 
+	currentDate.setHours(0, 0, 0, 0)
 	while (currentDate <= today) {
-		const currentDay = new Date(currentDate)
-		currentDay.setHours(0, 0, 0, 0)
-
 		allDays.push({
-			date: currentDay.toISOString().split('T')[0],
-			inRange: currentDay > new Date(habit.createdAt),
+			date: currentDate.toDateString(),
+			inRange: currentDate >= new Date(habit.createdAt),
 			isCompleted: habit.days.some(
-				day => day.date === currentDay.toISOString().split('T')[0]
+				day => day.date === currentDate.toDateString()
 			),
-			isCurrentDay:
-				currentDay.toISOString().split('T')[0] ===
-				today.toISOString().split('T')[0],
+			isCurrentDay: currentDate.getTime() === today.getTime(),
 		})
-
 		currentDate.setDate(currentDate.getDate() + 1)
 	}
+	const days = ref(allDays)
 
-	const daysToAdd = 7 - (allDays.length % 7)
-	if (daysToAdd < 7) {
-		for (let i = 0; i < daysToAdd; i++) {
-			const emptyDay = new Date(today)
-			emptyDay.setDate(today.getDate() + i + 1)
-			emptyDay.setHours(0, 0, 0, 0)
+	const weeks = computed(() => {
+		const weeksArray = []
+		let i = 0
+		while (i < days.value.length) {
+			weeksArray.push(days.value.slice(i, i + 7))
+			i += 7
+		}
+		return weeksArray
+	})
 
-			allDays.push({
-				date: emptyDay.toISOString().split('T')[0],
-				inRange: false,
-				isCompleted: false,
-				isCurrentDay: false,
-			})
+	if (weeks.value.length > 0) {
+		const lastWeek = weeks.value[weeks.value.length - 1]
+		const daysToAdd = 7 - lastWeek.length
+		if (daysToAdd > 0) {
+			for (let i = 0; i < daysToAdd; i++) {
+				const emptyDay = new Date(today)
+				emptyDay.setDate(today.getDate() + i + 1)
+				emptyDay.setHours(0, 0, 0, 0)
+
+				days.value.push({
+					date: emptyDay.toDateString(),
+					inRange: false,
+					isCompleted: false,
+					isCurrentDay: false,
+				})
+			}
 		}
 	}
 
-	const days = ref(allDays)
-	const weeks = computed(() => {
-		const weeks = []
-		for (let i = 0; i < days.value.length; i += 7) {
-			weeks.push(days.value.slice(i, i + 7))
-		}
-		return weeks
+	const todayDot = computed(() => {
+		return days.value.find(day => day.date === today.toDateString())
 	})
 
 	return {
 		weeks,
 		days,
+		todayDot,
 	}
 }
