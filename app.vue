@@ -22,6 +22,5 @@ useHead({
 				<NuxtPage />
 			</NuxtLayout>
 		</AuthProvider>
-		<AppRouterTestVue />
 	</UApp>
 </template>
