@@ -69,7 +69,9 @@ watch(
 				:habit="habit"
 			/>
 		</div>
-		<div v-if="habitStore.notArchivedHabits.length === 0">
+		<div
+			v-if="habitStore.notArchivedHabits.length === 0 && !habitStore.isLoading"
+		>
 			<h1 class="text-2xl text-center font-bold">
 				Тут пока ничего нет, добавьте свою привычку на экран
 			</h1>
